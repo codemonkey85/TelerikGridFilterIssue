@@ -38,7 +38,8 @@ public partial class Home
                     Operator = FilterOperator.IsNotEqualTo,
                     Value = CustStatus.Expired
                 },
-            }
+            },
+            LogicalOperator = FilterCompositionLogicalOperator.And,
         };
 
         args.GridState.FilterDescriptors.Add(discontinuedColumnFilter);
