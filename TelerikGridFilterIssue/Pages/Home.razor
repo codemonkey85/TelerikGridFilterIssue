@@ -4,12 +4,56 @@
   Home
 </PageTitle>
 
-<TelerikButton OnClick="@(_ => _message = "Button pressed!")">
-  Say Hello
-</TelerikButton>
-
-@_message
-
-@code {
-  private string _message = "Hello World!";
-}
+<TelerikGrid @ref="@Grid"
+             TItem="@GridDataItem"
+             Data="@GridData"
+             SelectionMode="@GridSelectionMode.Single"
+             FilterMode="@GridFilterMode.FilterMenu"
+             FilterMenuType="@FilterMenuType.CheckBoxList"
+             ShowColumnMenu="@true"
+             Sortable="@true"
+             SortMode="@SortMode.Multiple"
+             Navigable="@true"
+             Resizable="@true"
+             Groupable="@false">
+  <GridSettings>
+    <GridColumnMenuSettings Lockable="@false"
+                            ShowColumnChooser="@false"
+                            FilterMode="@ColumnMenuFilterMode.FilterMenu" />
+  </GridSettings>
+  <GridToolBarTemplate>
+    <TelerikButton OnClick="@Load">
+      Load
+    </TelerikButton>
+  </GridToolBarTemplate>
+  <NoDataTemplate>
+    <div>
+      No data!
+    </div>
+  </NoDataTemplate>
+  <GridColumns>
+    <GridColumn Field="@nameof(GridDataItem.Name)"
+                FieldType="@typeof(string)"
+                FilterMenuType="@FilterMenuType.Menu"
+                Title="Name"
+                Width="100px" />
+    <GridColumn Field="@nameof(GridDataItem.RegionId)"
+                FieldType="@typeof(RegionsByType)"
+                FilterMenuType="@FilterMenuType.CheckBoxList"
+                Title="Region"
+                Width="100px">
+      <Template>
+        @(ToDisplayText(((GridDataItem)context).RegionId))
+      </Template>
+    </GridColumn>
+    <GridColumn Field="@nameof(GridDataItem.StatusId)"
+                FieldType="@typeof(CustStatus)"
+                FilterMenuType="@FilterMenuType.CheckBoxList"
+                Title="Status"
+                Width="100px">
+      <Template>
+        @(ToDisplayText(((GridDataItem)context).StatusId))
+      </Template>
+    </GridColumn>
+  </GridColumns>
+</TelerikGrid>
