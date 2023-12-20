@@ -7,7 +7,7 @@ public partial class Home
 
     private List<GridDataItem> GridData { get; set; } = new();
 
-    private async Task Load()
+    private void Load()
     {
         GridData.Clear();
         GridData.AddRange(Enumerable.Range(1, 100).Select(i => new GridDataItem
@@ -16,58 +16,41 @@ public partial class Home
             RegionId = (RegionsByType)(i % 4),
             StatusId = (CustStatus)(i % 4),
         }));
-
-        await BuildDefaultFilterDescriptors();
-
-        StateHasChanged();
     }
 
-    private Task BuildDefaultFilterDescriptors()
+    private static void OnGridStateInit(GridStateEventArgs<GridDataItem> args)
     {
-        if (Grid is null)
+        var discontinuedColumnFilter = new CompositeFilterDescriptor
         {
-            return Task.CompletedTask;
-        }
-
-        var gridState = Grid.GetState();
-        gridState.FilterDescriptors.Clear();
-
-        var filterDescriptorCollection = new FilterDescriptorCollection
-        {
-            new FilterDescriptor
+            FilterDescriptors = new FilterDescriptorCollection
             {
-                Member = nameof(GridDataItem.RegionId),
-                Operator = FilterOperator.IsEqualTo,
-                Value = RegionsByType.Americas,
-                MemberType = typeof(RegionsByType),
-            },
-            new FilterDescriptor
-            {
-                Member = nameof(GridDataItem.StatusId),
-                Operator = FilterOperator.IsNotEqualTo,
-                Value = CustStatus.Expired,
-                MemberType = typeof(CustStatus),
+                new FilterDescriptor
+                {
+                    Member = nameof(GridDataItem.RegionId),
+                    MemberType = typeof(RegionsByType),
+                    Operator = FilterOperator.IsEqualTo,
+                    Value = RegionsByType.Americas,
+                },
+                new FilterDescriptor
+                {
+                    Member = nameof(GridDataItem.StatusId),
+                    MemberType = typeof(CustStatus),
+                    Operator = FilterOperator.IsNotEqualTo,
+                    Value = CustStatus.Expired
+                },
             }
         };
 
-        gridState.FilterDescriptors.Add(
-            new CompositeFilterDescriptor
-            {
-                FilterDescriptors = filterDescriptorCollection,
-                LogicalOperator = FilterCompositionLogicalOperator.And,
-            }
-        );
-
-        return Grid.SetStateAsync(gridState);
+        args.GridState.FilterDescriptors.Add(discontinuedColumnFilter);
     }
 
     private class GridDataItem
     {
         public string? Name { get; set; }
 
-        public RegionsByType RegionId { get; set; }
+        public RegionsByType RegionId { get; init; }
 
-        public CustStatus StatusId { get; set; }
+        public CustStatus StatusId { get; init; }
     }
 
     private enum RegionsByType
