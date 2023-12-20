@@ -1,0 +1,15 @@
+﻿@page "/"
+
+<PageTitle>
+  Home
+</PageTitle>
+
+<TelerikButton OnClick="@(_ => _message = "Button pressed!")">
+  Say Hello
+</TelerikButton>
+
+@_message
+
+@code {
+  private string _message = "Hello World!";
+}
